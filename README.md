@@ -8,8 +8,6 @@ This project aims to replicate the behavior of `printf` while adhering to the 42
 2. [Features](#features)
 3. [Usage](#usage)
 4. [Lessons Learned](#lessons-learned)
-5. [Testing](#testing)
-6. [License](#license)
 
 ---
 

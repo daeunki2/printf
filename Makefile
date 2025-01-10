@@ -36,6 +36,10 @@ clean :
 fclean : clean
 	rm -rf $(NAME)
 
+test: all
+    gcc -Wall -Wextra -Werror -o test_ft_printf tests/test_ft_printf.c libftprintf.a
+    ./test_ft_printf
+
 re :
 	make fclean
 	make all

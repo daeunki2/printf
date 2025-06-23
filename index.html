@@ -2,26 +2,139 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>ft_printf 프로젝트</title>
+  <title>ft_printf 프로젝트 소개</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
-    h1 { color: #2c3e50; }
-    p { font-size: 18px; }
+    body {
+      font-family: 'Nanum Gothic', sans-serif;
+      background-color: #f9f9f9;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 20px;
+      color: #333;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #007acc;
+      border-bottom: 3px solid #007acc;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #005f99;
+      margin-top: 30px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+    ul {
+      margin-left: 20px;
+    }
+    p {
+      margin-bottom: 15px;
+    }
+    code {
+      background-color: #eee;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: Consolas, monospace;
+    }
+    pre {
+      background-color: #eee;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+    footer {
+      margin-top: 50px;
+      font-size: 0.9em;
+      color: #888;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-  <h1>ft_printf 프로젝트</h1>
-  <p>42에서 진행한 ft_printf 프로젝트입니다. printf 함수의 일부를 직접 구현했습니다.</p>
-  <h2>주요 기능</h2>
-  <ul>
-    <li>문자열 출력</li>
-    <li>정수 출력</li>
-    <li>16진수 출력</li>
-  </ul>
-  <h2>사용법</h2>
-  <pre><code>gcc -Wall -Wextra -Werror ft_printf.c
-./a.out
-</code></pre>
-  <p>더 자세한 내용은 <a href="https://github.com/사용자명/ft_printf">GitHub 레포지토리</a>를 참고하세요.</p>
+  <h1>ft_printf</h1>
+
+  <section>
+    <h2>1. 공부 목표</h2>
+    <p><strong>hello world!</strong> 이 한마디로 우리는 컴퓨터 프로그래밍의 세계로 들어왔습니다.<br />
+    이것을 가능하게 해준 마법의 함수는 <code>printf</code>입니다.</p>
+    <p>이 과제는 기존 <code>printf</code> 함수의 작동 원리를 이해하고, 가변 인자 처리 및 다양한 자료형 출력 방법을 익히기 위해 직접 <code>ft_printf</code>를 구현하는 프로젝트입니다.</p>
+    <p>이 과제를 통해 우리는 아래의 3가지를 공부합니다.</p>
+    <ul>
+      <li><strong>printf의 작동 원리</strong>
+        <ul>
+          <li>어떻게 인자를 해석하는가?</li>
+          <li>가변인수란?</li>
+        </ul>
+      </li>
+      <li><strong>각 자료형과 그의 표현</strong>
+        <ul>
+          <li>정수형, 실수형, 16진수 등 다양한 출력 방식</li>
+        </ul>
+      </li>
+      <li><strong>C언어 코딩 스타일</strong>
+        <ul>
+          <li>헤더파일 만들기</li>
+          <li>소스파일을 분리하고 관리하기</li>
+          <li>makefile 작성하기</li>
+        </ul>
+      </li>
+    </ul>
+    <p>본 프로젝트에서는 <code>%c</code>, <code>%s</code>, <code>%d</code>, <code>%x</code> 등의 기본 서식 지정자를 지원하며, 가변 인자 처리의 복잡성을 익히는 데 중점을 두었습니다.</p>
+    <p>그리 어렵지 않습니다. <em>don't panic.</em><br />일단 이게 시작이야!</p>
+  </section>
+
+  <section>
+    <h2>2. printf의 작동 원리</h2>
+    <p><code>printf</code> 함수는 문자열 포맷(format string)을 받아서, 그 안에 포함된 서식 지정자(format specifiers)를 찾아 해당 인자(argument)를 출력 형식에 맞게 변환하여 화면에 출력하는 함수입니다.</p>
+    <p>예를 들어:</p>
+    <pre><code>printf("Hello %s! You scored %d points.\n", name, score);</code></pre>
+    <p>- <code>%s</code>는 문자열을, <code>%d</code>는 정수를 출력합니다.</p>
+    <p>함수는 포맷 문자열을 처음부터 끝까지 순회하면서</p>
+    <ul>
+      <li><code>%</code> 기호가 나오면 그 뒤의 문자를 해석해 어떤 자료형인지 판단하고,</li>
+      <li>해당 자료형에 맞게 전달된 인자 값을 읽어 출력합니다.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>3. 인자 해석과 가변 인수 처리</h2>
+    <p><code>printf</code>는 가변 인자 함수(variadic function)입니다. 즉, 매개변수의 개수가 고정되어 있지 않고 호출 시점에 달라질 수 있습니다.</p>
+    <p>C언어에서는 가변 인자를 처리하기 위해 <code>&lt;stdarg.h&gt;</code> 헤더 파일에 정의된 매크로를 사용합니다:</p>
+    <ul>
+      <li><code>va_list</code>: 인자 목록을 가리키는 타입</li>
+      <li><code>va_start(va_list ap, last_fixed_arg)</code>: 가변 인자 리스트 시작을 초기화</li>
+      <li><code>va_arg(va_list ap, type)</code>: 가변 인자에서 다음 인자를 읽음</li>
+      <li><code>va_end(va_list ap)</code>: 가변 인자 처리 종료</li>
+    </ul>
+    <p><code>ft_printf</code>는 포맷 문자열을 순회하면서 서식 지정자를 만나면, <code>va_arg</code>를 이용해 다음 인자를 해당 자료형으로 꺼내와 출력합니다.</p>
+  </section>
+
+  <section>
+    <h2>4. 각 자료형과 그의 표현</h2>
+    <p>서식 지정자마다 출력하는 자료형이 다릅니다:</p>
+    <ul>
+      <li><code>%c</code> : 문자(char)</li>
+      <li><code>%s</code> : 문자열(char *)</li>
+      <li><code>%d</code> 또는 <code>%i</code>: 정수(int)</li>
+      <li><code>%u</code> : 부호 없는 정수(unsigned int)</li>
+      <li><code>%x</code> / <code>%X</code> : 16진수 출력 (소문자/대문자)</li>
+      <li><code>%p</code> : 포인터 주소 출력</li>
+    </ul>
+    <p><code>ft_printf</code>에서는 이러한 서식 지정자별로 출력하는 함수를 구현해서 포맷에 맞게 값을 변환하고 출력합니다.</p>
+  </section>
+
+  <section>
+    <h2>5. C언어 코딩 스타일</h2>
+    <ul>
+      <li><strong>헤더파일 분리</strong>: 함수 선언과 상수 정의를 <code>ft_printf.h</code>에 분리해 관리</li>
+      <li><strong>소스 파일 분리</strong>: 출력 함수별로 코드 분리 (<code>print_char.c</code>, <code>print_str.c</code> 등)</li>
+      <li><strong>Makefile 작성</strong>: 편리한 컴파일과 청소(clean) 작업 지원</li>
+    </ul>
+  </section>
+
+  <footer>
+    &copy; 2025 ft_printf 프로젝트
+  </footer>
 </body>
 </html>
